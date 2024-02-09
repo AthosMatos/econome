@@ -120,6 +120,7 @@ export const AppProvider = ({ children }: { children: any }) => {
 
         setAppData(newAppData)
     }
+
     function addEmptyExpense() {
         const newAppData = [...AppData]
 

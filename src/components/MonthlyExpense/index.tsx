@@ -32,7 +32,6 @@ export const MonthlyExpenseStyles = StyleSheet.create({
         display: 'flex',
         flex: 1,
         //width: ,
-
     },
     LineGradient: {
         display: 'flex',
@@ -42,25 +41,20 @@ export const MonthlyExpenseStyles = StyleSheet.create({
     }
 });
 
-
 export const MonthlyExpense = ({ data }: { data: AppDataI }) => {
     const { funcs } = useAppContext()
 
     return (
-        <FlatList
-            data={data.Bills}
-            renderItem={({ item }) => (
-                <SingularExpenses Bill={data.Bill} maxBill={data.MaxBill} LineW={LineW} billData={item} />
-            )}
-            keyExtractor={(item, index) => index.toString()}
-            ListFooterComponent={() => (
-                <AddSingleExpense onPress={() => funcs.addEmptyBill(data.month)} />
-            )}
-            contentContainerStyle={{
-                width: Dimensions.get('window').width,
+        <View style={{
+            width: Dimensions.get('window').width,
                 alignItems: 'center',
                 gap: PixelRatio.roundToNearestPixel(26),
-            }}
-        />
+                paddingBottom: PixelRatio.roundToNearestPixel(36),
+        }}>
+            {data.Bills.map((bill, index) => (
+                    <SingularExpenses Bill={data.Bill} maxBill={data.MaxBill} LineW={LineW} billData={bill} key={index} />
+            ))}
+            <AddSingleExpense onPress={() => funcs.addEmptyBill(data.month)} />
+        </View>
     )
 }

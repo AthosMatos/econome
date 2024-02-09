@@ -17,18 +17,17 @@ export const SingularExpenses = ({ Bill, maxBill, billData, LineW }: { Bill: num
     const [customName, setCustomName] = useState<string>(billData.name)
     const [customValue, setCustomValue] = useState<number>(billData.value)
     const [deleteBill, setDeleteBill] = useState<boolean>(false)
+    const [deleteMode, setDeleteMode] = useState<boolean>(false)
     const gradientWidth = useSharedValue(0)
     const [gradient, setGradient] = useState(generateExpenseGradient(Bill ? (customValue / Bill) : 0))
     const { funcs } = useAppContext()
 
     useEffect(() => {
-        if (Bill) {
-
+        if (Bill) 
+        {
             const porc = (customValue / Bill) > 1 ? 1 : (customValue / Bill) < 0 ? 0 : (customValue / Bill)
-
             gradientWidth.value = withSpring((LineW * 1.14) * porc, {
-                damping: 50,
-                //stiffness: 100,
+                damping: 50
             })
             setGradient(generateExpenseGradient(porc))
         }
@@ -46,13 +45,13 @@ export const SingularExpenses = ({ Bill, maxBill, billData, LineW }: { Bill: num
             extrapolate: 'clamp',
         });
 
-        opacity.addListener(({ value }) => {
-
+        opacity.addListener(({ value }) => 
+        {
             if (value == 1) {
                 if (deleteBill == false) {
                     setDeleteBill(true)
+                    funcs.deleteBill(billData.id)
                 }
-
             }
         })
         return (
@@ -73,12 +72,6 @@ export const SingularExpenses = ({ Bill, maxBill, billData, LineW }: { Bill: num
     };
 
     useEffect(() => {
-        if (deleteBill) {
-            funcs.deleteBill(billData.id)
-        }
-    }, [deleteBill])
-
-    useEffect(() => {
         if (customName != billData.name || customValue != billData.value) {
             funcs.editBill(billData.id, customName, customValue)
         }
@@ -88,7 +81,6 @@ export const SingularExpenses = ({ Bill, maxBill, billData, LineW }: { Bill: num
         gradientWidth.value = e.x > 0 ? e.x : 0
 
     }).onEnd((e) => {
-        //interpolate the value based on the width of the line
         const porc = e.x / (LineW * 1.14)
         let v = Bill * porc
         console.log(v)
@@ -103,7 +95,7 @@ export const SingularExpenses = ({ Bill, maxBill, billData, LineW }: { Bill: num
     });
 
     return (
-        <Swipeable renderRightActions={renderRightActions}>
+        !deleteMode ? (
             <View style={MonthlyExpenseStyles.Wrapper}>
                 <TextInput
                     placeholder="Nome"
@@ -130,7 +122,6 @@ export const SingularExpenses = ({ Bill, maxBill, billData, LineW }: { Bill: num
                     </View>
                 </GestureDetector>
 
-
                 <CurrencyInput
                     placeholder="Valor"
                     value={customValue}
@@ -146,9 +137,44 @@ export const SingularExpenses = ({ Bill, maxBill, billData, LineW }: { Bill: num
                         width: Dimensions.get('window').width * 0.22,
                     }]}
                 />
-
+                    <TouchableOpacity 
+                        onPress={() => {
+                            setDeleteMode(true)
+                        }}
+                        style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                width: PixelRatio.roundToNearestPixel(32),
+                                height: PixelRatio.roundToNearestPixel(32),
+                                borderRadius: PixelRatio.roundToNearestPixel(24),
+                                backgroundColor: Colors.softBackground(0.45),
+                            }}>
+                        <FaIcons name={'ellipsis-v'} size={16} color={Colors.white(0.40)} />
+                    </TouchableOpacity>
+                    
+            </View>
+        ) : (
+        <Swipeable renderRightActions={renderRightActions}>
+            <View style={{
+                height: PixelRatio.roundToNearestPixel(48),
+                backgroundColor: Colors.softBackground(1),
+                borderRadius: 8,
+                width: Dimensions.get('window').width * 0.92,
+            }}>
+                <Text style={{
+                    color: Colors.white(0.40),
+                    fontSize: Dimensions.get('window').width * 0.04,
+                    textAlign: 'center',
+                    paddingVertical: PixelRatio.roundToNearestPixel(14),
+                    fontFamily: 'Mukta-ExtraLight',
+                }}>
+                    Deslize para deletar
+                </Text>
+                
             </View>
         </Swipeable>
+        )
 
     )
 }

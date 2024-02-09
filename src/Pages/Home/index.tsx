@@ -46,10 +46,14 @@ const Home = (props: any) => {
                 source={require('../../assets/images/AppTitle.png')}
                 style={HomeStyles.titleIcon} />
 
-            <GestureHandlerRootView>
-                <Expenses />
-                {/* <MonthlyExpenses /> */}
-            </GestureHandlerRootView>
+            <ScrollView
+            showsVerticalScrollIndicator={false}
+            >
+                <GestureHandlerRootView>
+                    <Expenses />
+                    {/* <MonthlyExpenses /> */}
+                </GestureHandlerRootView>
+            </ScrollView>
 
         </LinearGradient>
     );
