@@ -46,7 +46,7 @@ export const SingularExpenses = ({ Bill, maxBill, billData, LineW }: { Bill: num
             extrapolate: 'clamp',
         });
 
-        opacity.addListener(({ value }) => {
+        /* opacity.addListener(({ value }) => {
 
             if (value == 1) {
                 if (deleteBill == false) {
@@ -54,7 +54,7 @@ export const SingularExpenses = ({ Bill, maxBill, billData, LineW }: { Bill: num
                 }
 
             }
-        })
+        }) */
         return (
 
             <Animated.View style={{
@@ -64,7 +64,9 @@ export const SingularExpenses = ({ Bill, maxBill, billData, LineW }: { Bill: num
                 justifyContent: 'center',
                 marginLeft: PixelRatio.roundToNearestPixel(14),
             }}>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={() => {
+                    setDeleteBill(true)
+                }}>
                     <FaIcons name={'trash'} size={30} color={'red'} />
                 </TouchableOpacity>
             </Animated.View>
@@ -91,7 +93,7 @@ export const SingularExpenses = ({ Bill, maxBill, billData, LineW }: { Bill: num
         //interpolate the value based on the width of the line
         const porc = e.x / (LineW * 1.14)
         let v = Bill * porc
-        console.log(v)
+        //console.log(v)
         if (v < 0) {
             v = 0
         }
@@ -103,7 +105,9 @@ export const SingularExpenses = ({ Bill, maxBill, billData, LineW }: { Bill: num
     });
 
     return (
-        <Swipeable renderRightActions={renderRightActions}>
+        <Swipeable
+            activateAfterLongPress={1}
+            renderRightActions={renderRightActions}>
             <View style={MonthlyExpenseStyles.Wrapper}>
                 <TextInput
                     placeholder="Nome"

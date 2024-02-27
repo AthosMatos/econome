@@ -1,22 +1,17 @@
 import { Dimensions, PixelRatio, StyleSheet, Text, TouchableOpacity, View } from "react-native"
-import { Colors, formatMoney, generateExpenseColor } from "../../../utils"
-import { useAppContext } from "../../../context/appContext"
+import { Colors, GravidadeColors, formatMoney } from "../../utils"
+import { useAppContext } from "../../context/appContext"
 import CurrencyInput from "react-native-currency-input";
 import { useEffect, useState } from "react";
-import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import { Gesture, GestureDetector, GestureHandlerRootView } from "react-native-gesture-handler";
 import FaIcons from "react-native-vector-icons/FontAwesome5";
-import { runOnJS } from "react-native-reanimated";
+import { interpolateColor, runOnJS } from "react-native-reanimated";
 
 const Styles = StyleSheet.create({
     BillWrapper: {
-        display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        //backgroundColor: Colors.softBackground(0.5),
         width: Dimensions.get('window').width,
-        //height: PixelRatio.roundToNearestPixel(200),
-        marginTop: PixelRatio.roundToNearestPixel(20),
-        marginBottom: PixelRatio.roundToNearestPixel(60)
     },
     InnerBorder: {
         borderWidth: 1,
@@ -24,11 +19,8 @@ const Styles = StyleSheet.create({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        //paddingVertical: PixelRatio.roundToNearestPixel(50),
-        //marginVertical: PixelRatio.roundToNearestPixel(60),
         width: Dimensions.get('window').width * 0.88,
         height: PixelRatio.roundToNearestPixel(200),
-
     },
     MainPayText: {
         fontFamily: 'Mukta-ExtraLight',
@@ -58,13 +50,15 @@ export const Expense = (props: ExpenseI) => {
     const { Bill, MaxBill, month } = props
     const [customMaxBill, setCustomMaxBill] = useState<number>(MaxBill)
     const { funcs } = useAppContext()
-    const expenseColor = generateExpenseColor(MaxBill > 0 ? Bill / MaxBill : 0)
+    const expenseColor = interpolateColor(
+        MaxBill > 0 ? Bill / MaxBill : 0,
+        [0, 0.5, 1],
+        [GravidadeColors.lowEnd, GravidadeColors.mediumEnd, GravidadeColors.highEnd]
+    )
+
     const [deleteBill, setDeleteBill] = useState<boolean>(false)
 
-    function toogleDeleteBill() {
-        console.log('toogleDeleteBill')
-        setDeleteBill(!deleteBill)
-    }
+
 
     useEffect(() => {
         if (customMaxBill !== MaxBill) {
@@ -73,11 +67,11 @@ export const Expense = (props: ExpenseI) => {
     }, [customMaxBill])
 
     const OnLongPress = Gesture.LongPress().onStart(({ state }) => {
-        runOnJS(toogleDeleteBill)()
+        runOnJS(setDeleteBill)(!deleteBill)
     })
 
     return (
-        <View style={Styles.BillWrapper}>
+        <GestureHandlerRootView style={Styles.BillWrapper}>
             <GestureDetector gesture={OnLongPress}>
                 {
                     !deleteBill ?
@@ -113,7 +107,7 @@ export const Expense = (props: ExpenseI) => {
                         }]}>
                             <TouchableOpacity
                                 onPress={() => {
-                                    funcs.deleteExpense()
+                                    funcs.deleteMonth()
                                     setDeleteBill(false)
                                 }}
                                 style={{
@@ -128,7 +122,10 @@ export const Expense = (props: ExpenseI) => {
                         </View>
                 }
             </GestureDetector>
-        </View>
+        </GestureHandlerRootView>
+
+
+
     )
 }
 
@@ -146,7 +143,7 @@ export const AddExpense = () => {
         }}>
             <TouchableOpacity
                 onPress={() => {
-                    ContextFuncs.addEmptyExpense()
+                    ContextFuncs.addEmptyNewMonth()
                 }}
                 style={[Styles.InnerBorder, {
                     borderColor: Colors.softBackground(1),

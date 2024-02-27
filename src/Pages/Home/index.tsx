@@ -2,56 +2,95 @@ import {
     StatusBar,
     StyleSheet,
     PixelRatio,
-    Image,
     Dimensions,
-    ScrollView,
-    View,
-    Text,
+    View, Text, Image, TouchableOpacity
 } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
 
-import { Expenses } from '../../components/Expenses';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { vec } from '@shopify/react-native-skia';
+import GradientBackground from '../../components/GradientBackground';
+import Bills from '../../components/Bills';
+import ToolBar from '../../components/ToolsBar';
+import { useThemeContext } from '../../context/themeContext';
+import { AppIcon } from '../../components/appIcon';
+import { ScrollView } from 'react-native';
+import { useAppContext } from '../../context/appContext';
+import { AddExpense, Expense } from '../../components/Expense';
 
-export interface BillsI {
-    id: number;
-    name: string;
-    value: number;
-}
 
-export interface AppDataI {
-    month: string;
-    Bill: number;
-    MaxBill: number;
-    Bills: BillsI[];
-}
+const CurrentBillMonthStyles = StyleSheet.create({
+    BillsWrapper: {
 
+        flexDirection: 'row',
+
+    }
+})
 const Home = (props: any) => {
 
+    const { states: { colors }, } = useThemeContext()
+
+    const { states: ContextStates, funcs: ContextFuncs } = useAppContext()
+
+    function goToPage(e: any) {
+        const page = Math.round(e.nativeEvent.contentOffset.x / Dimensions.get('window').width);
+        if (page != ContextStates.pageIndex) {
+            ContextFuncs.setPageIndex(page);
+        }
+    }
     return (
-        <LinearGradient
-            colors={['#11111B', '#464660']}
-            start={{ x: 0, y: 0.23 }}
-            end={{ x: 0, y: 1 }}
-            style={{
-                flex: 1,
+
+        <GradientBackground
+            gradient={{
+                colors: colors,
+                end: vec(Dimensions.get('window').width, Dimensions.get('window').height),
+                start: vec(0, 0),
             }}
+            width={Dimensions.get('window').width}
+            height={Dimensions.get('window').height}
         >
             <StatusBar
-                backgroundColor={'#11111B'}
+                backgroundColor={'black'}
                 barStyle="light-content" />
 
-            <Image
-                resizeMode='contain'
-                source={require('../../assets/images/AppTitle.png')}
-                style={HomeStyles.titleIcon} />
+            <AppIcon />
 
-            <GestureHandlerRootView>
-                <Expenses />
-                {/* <MonthlyExpenses /> */}
-            </GestureHandlerRootView>
+            <View style={{
+                gap: PixelRatio.roundToNearestPixel(26),
+            }}>
+                <ScrollView
+                    showsHorizontalScrollIndicator={false}
+                    pagingEnabled
+                    horizontal
 
-        </LinearGradient>
+                    onScroll={goToPage}
+                    contentContainerStyle={[{
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        margin: 0,
+                        padding: 0,
+                    }, CurrentBillMonthStyles.BillsWrapper]}
+                >
+
+                    {
+                        ContextStates.AppData.map((data, index) => (
+                            <Expense key={index} Bill={data.Bill} MaxBill={data.MaxBill} month={data.month} />
+                        ))
+                    }
+                    <AddExpense />
+                </ScrollView>
+            </View>
+            <ToolBar />
+            <Bills />
+
+
+
+
+
+
+        </GradientBackground>
+
+
+
+
     );
 }
 
@@ -61,15 +100,6 @@ export const HomeStyles = StyleSheet.create({
         //background: 'linear-gradient(180deg, #11111B 23%, #464660 100%)',
         flex: 1,
     },
-
-    titleIcon: {
-        marginTop: PixelRatio.roundToNearestPixel(44),
-        marginBottom: PixelRatio.roundToNearestPixel(24),
-        height: PixelRatio.roundToNearestPixel(48),
-        width: Dimensions.get('window').width,
-
-    },
-
     buttonsContainer: {
         //justifyContent: 'center',
         alignItems: 'center',

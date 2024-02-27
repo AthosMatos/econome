@@ -1,7 +1,43 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { AppDataI } from "../Pages/Home";
 import changeNavigationBarColor from "react-native-navigation-bar-color";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+
+export interface BillsExpensesI {
+    id: number;
+    name: string;
+    value: number;
+    date: string;
+}
+
+export interface BillsI {
+    id: number;
+    name: string;
+    value: number;
+    img: any;
+    expenses: BillsExpensesI[];
+}
+
+export interface AppDataI {
+    month: string;
+    Bill: number;
+    MaxBill: number;
+    Bills: BillsI[];
+}
+
+interface editExpenseFromBillI {
+    billId: number;
+    expenseId: number;
+    name?: string;
+    value?: number;
+    date?: string;
+}
+
+interface editBillI {
+    id: number;
+    name?: string;
+    value?: number;
+    img?: any;
+}
 
 interface AppContextI {
     funcs: {
@@ -10,11 +46,14 @@ interface AppContextI {
         getDBData: () => void;
         addEmptyMonth: () => void;
         addEmptyBill: (month: string) => void;
-        editBill: (id: number, name: string, value: number) => void;
+        editBill: (params: editBillI) => void;
         deleteBill: (id: number) => void;
         editMonthBill: (MaxBill: number) => void;
-        addEmptyExpense: () => void;
-        deleteExpense: () => void;
+        addEmptyNewMonth: () => void;
+        deleteMonth: () => void;
+        getBill: (id: number) => BillsI | undefined;
+        addEmptyExpenseToBill: (id: number, streetName?: string | null) => void;
+        editExpenseFromBill: (params: editExpenseFromBillI) => void;
     };
     states: {
         AppData: AppDataI[];
@@ -68,27 +107,42 @@ export const AppProvider = ({ children }: { children: any }) => {
         }])
     }
 
-    function addEmptyBill() {
+    function addEmptyExpenseToBill(id: number, streetName?: string | null) {
         const mIndex = pageIndex
         const newAppData = [...AppData]
-        newAppData[mIndex].Bills.push({
-            id: newAppData[mIndex].Bills.length + 1,
-            name: '',
-            value: 0
-        })
-        setAppData(newAppData)
+        const bill = newAppData[mIndex].Bills.find((bill) => bill.id == id)
+        if (bill) {
+            bill.expenses.push({
+                id: bill.expenses.length + 1,
+                name: streetName ? streetName : '',
+                value: 0,
+                date: new Date().toISOString()
+            })
+            //update total bill value
+            bill.value = bill.expenses.reduce((acc, expense) => acc + expense.value, 0)
+        }
     }
 
-    function editBill(id: number, name: string, value: number) {
+
+    function editBill(params: editBillI) {
+        const { id, name, value, img } = params
         const mIndex = pageIndex
         const newAppData = [...AppData]
         newAppData[mIndex].Bills = newAppData[mIndex].Bills.map((bill) => {
             if (bill.id == id) {
-                return {
+                const updatedBill = {
                     ...bill,
-                    name,
-                    value
                 }
+                if (name) {
+                    updatedBill.name = name
+                }
+                if (value) {
+                    updatedBill.value = value
+                }
+                if (img) {
+                    updatedBill.img = img
+                }
+                return updatedBill
             }
             else {
                 return bill
@@ -102,11 +156,52 @@ export const AppProvider = ({ children }: { children: any }) => {
         setAppData(newAppData)
     }
 
+
+    function editExpenseFromBill(params: editExpenseFromBillI) {
+        const { billId, expenseId, name, value, date } = params
+
+        const mIndex = pageIndex
+        const newAppData = [...AppData]
+        const bill = newAppData[mIndex].Bills.find((bill) => bill.id == billId)
+        if (bill) {
+            bill.expenses = bill.expenses.map((expense) => {
+                if (expense.id == expenseId) {
+                    const updatedExpense = {
+                        ...expense,
+                    }
+                    if (name) {
+                        updatedExpense.name = name
+                    }
+                    if (value) {
+                        updatedExpense.value = value
+                    }
+                    if (date) {
+                        updatedExpense.date = date
+                    }
+                    return updatedExpense
+                }
+                else {
+                    return expense
+                }
+            })
+            //update total bill value
+            bill.value = bill.expenses.reduce((acc, expense) => acc + expense.value, 0)
+        }
+
+        setAppData(newAppData)
+    }
+
     function deleteBill(id: number) {
         const mIndex = pageIndex
         const newAppData = [...AppData]
         newAppData[mIndex].Bills = newAppData[mIndex].Bills.filter((bill) => bill.id != id)
         setAppData(newAppData)
+    }
+
+    function getBill(id: number) {
+        const mIndex = pageIndex
+        const bill = AppData[mIndex].Bills.find((bill) => bill.id == id)
+        return bill
     }
 
     function editMonthBill(MaxBill: number) {
@@ -120,7 +215,7 @@ export const AppProvider = ({ children }: { children: any }) => {
 
         setAppData(newAppData)
     }
-    function addEmptyExpense() {
+    function addEmptyNewMonth() {
         const newAppData = [...AppData]
 
         let nextMonth = AllMonths[0]
@@ -144,7 +239,19 @@ export const AppProvider = ({ children }: { children: any }) => {
 
     }
 
-    function deleteExpense() {
+    function addEmptyBill() {
+        const mIndex = pageIndex
+        const newAppData = [...AppData]
+        newAppData[mIndex].Bills.push({
+            id: newAppData[mIndex].Bills.length + 1,
+            name: '',
+            value: 0,
+            img: '',
+            expenses: []
+        })
+        setAppData(newAppData)
+    }
+    function deleteMonth() {
         const newAppData = [...AppData]
         const mIndex = pageIndex
 
@@ -266,8 +373,11 @@ export const AppProvider = ({ children }: { children: any }) => {
         editBill,
         deleteBill,
         editMonthBill,
-        addEmptyExpense,
-        deleteExpense
+        addEmptyNewMonth,
+        deleteMonth,
+        getBill,
+        addEmptyExpenseToBill,
+        editExpenseFromBill,
     }
 
     const states = {
