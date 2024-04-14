@@ -3,17 +3,13 @@ import {Colors} from '../../../utils';
 import {StyleSheet} from 'react-native';
 
 export const MonthlyBudgetStyles = StyleSheet.create({
-  outerWrapper: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: Dimensions.get('window').width,
-  },
   InnerBorder: {
-    borderWidth: PixelRatio.roundToNearestPixel(3),
+    borderWidth: PixelRatio.roundToNearestPixel(2),
     borderRadius: PixelRatio.roundToNearestPixel(18),
-    width: Dimensions.get('window').width * 0.88,
+    width: Dimensions.get('window').width * 0.92,
     height: PixelRatio.roundToNearestPixel(200),
     backgroundColor: 'rgba(12, 12, 12, 0.36)',
+    overflow: 'hidden',
   },
   MainPayText: {
     fontFamily: 'Mukta-ExtraLight',

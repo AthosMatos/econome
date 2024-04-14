@@ -1,7 +1,7 @@
 import {Image} from 'react-native';
-import {ExpenseDBI} from '../../../../database/Data/ExpenseDB';
 import {cardHeight, extendedWidth, normalWidth} from '../styles';
-import {useToolBarContext} from '../../../../context/ToolBarContext';
+import {ExpenseDBI} from '../../../database/Data/ExpenseDB';
+import {useToolBarContext} from '../../../context/ToolBarContext';
 
 interface BackImgProps {
   expense: ExpenseDBI;
@@ -20,8 +20,8 @@ const BackImg = ({expense}: BackImgProps) => {
             position: 'absolute',
             opacity: 0.36,
             transform: [{rotate: '10deg'}, {scale: 1.4}],
-            width: (extendedCards ? extendedWidth : normalWidth) + 60,
-            height: cardHeight,
+            width: extendedCards ? extendedWidth : normalWidth,
+            height: cardHeight + 60,
           },
         ]}
         resizeMode={'cover'}

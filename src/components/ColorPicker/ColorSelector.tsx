@@ -11,8 +11,9 @@ import {getBestTextColorWorklet} from '../../utils';
 import ColorBall from './ColorBall';
 import {outersize, radius, useThemeContext} from '../../context/themeContext';
 
+const selectionMargin = 50;
+
 const ColorSelector = () => {
-  const selectionMargin = 50;
   const clickedBall = useSharedValue('');
   const {
     states: {colorBalls, realm},
@@ -57,7 +58,6 @@ const ColorSelector = () => {
           {x: ball.lastX, y: ball.lastY},
           event,
         );
-      ball.borderColor.value = getBestTextColorWorklet(hsl.h, hsl.s, hsl.l);
 
       if (distanceFromCenter <= radius) {
         ball.positionX.value = event.x;

@@ -1,4 +1,3 @@
-import {useDBContext} from '../../../../database/DBContext';
 import {
   Image,
   PixelRatio,
@@ -9,16 +8,16 @@ import {
   View,
 } from 'react-native';
 import FAicons from 'react-native-vector-icons/FontAwesome5';
-import {ExpenseDBI} from '../../../../database/Data/ExpenseDB';
 import {BSON} from 'realm';
 import {cardHeight, extendedWidth, normalWidth} from '../styles';
-import {Colors} from '../../../../utils';
-import {useToolBarContext} from '../../../../context/ToolBarContext';
-import {useState} from 'react';
+import {memo, useState} from 'react';
+import {ExpenseDBI} from '../../../database/Data/ExpenseDB';
+import {useDBContext} from '../../../database/DBContext';
+import {useToolBarContext} from '../../../context/ToolBarContext';
+import {Colors} from '../../../utils';
 
 interface AddExpenseCardProps {
-  setExpenses: React.Dispatch<React.SetStateAction<ExpenseDBI[]>>;
-  expenses: ExpenseDBI[];
+  monthID: BSON.ObjectId;
 }
 
 const AddExpenseCardStyles = StyleSheet.create({
@@ -30,13 +29,9 @@ const AddExpenseCardStyles = StyleSheet.create({
   },
 });
 
-export const AddExpenseCard = ({
-  setExpenses,
-  expenses,
-}: AddExpenseCardProps) => {
+const AddExpenseCard = memo(function ({monthID}: AddExpenseCardProps) {
   const [showDefaults, setShowDefaults] = useState(false);
   const {
-    states: {currMonthID},
     funcs: {
       add: {addExpenseCard},
     },
@@ -44,21 +39,6 @@ export const AddExpenseCard = ({
   const {
     states: {extendedCards},
   } = useToolBarContext();
-
-  const onAdd = () => {
-    if (currMonthID) {
-      const obj: ExpenseDBI = {
-        id: new BSON.ObjectId(),
-        name: 'Novo Gasto',
-        value: 0,
-        maxValue: 1000,
-        img: '',
-        currMonthID: currMonthID,
-      };
-      setExpenses([...expenses, obj]);
-      addExpenseCard(obj);
-    }
-  };
 
   const mockDefaults = [
     {
@@ -99,13 +79,16 @@ export const AddExpenseCard = ({
       {!showDefaults && <FAicons name="plus" size={40} color="#dfdfdf42" />}
       {showDefaults && (
         <ScrollView
+          showsVerticalScrollIndicator={false}
           style={{
             flexDirection: 'column',
           }}>
           {mockDefaults.map((e, i) => (
             <TouchableOpacity
+              key={i}
               onPress={() => {
                 setShowDefaults(false);
+                addExpenseCard(monthID);
               }}
               style={{
                 height: cardHeight * 0.6,
@@ -142,4 +125,6 @@ export const AddExpenseCard = ({
       )}
     </TouchableOpacity>
   );
-};
+});
+
+export default AddExpenseCard;

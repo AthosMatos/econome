@@ -24,7 +24,6 @@ import {Colors, GravidadeColors, formatMoney} from '../../../utils';
 import {useDBContext} from '../../../database/DBContext';
 import {MonthlyBudgetDBI} from '../../../database/Data/MonthlyBudgetDB';
 import {MonthlyBudgetStyles} from './styles';
-import {useFocusEffect} from '@react-navigation/native';
 
 interface MonthlyBudgetProps {
   budget: MonthlyBudgetDBI;
@@ -72,7 +71,7 @@ export const MonthlyBudget = ({budget, scrollToPage}: MonthlyBudgetProps) => {
 
   const pan = Gesture.Pan().onEnd(event => {
     const yDown = 80;
-    if (event.translationY > 40) {
+    if (event.translationY > 20) {
       lastY.value = yDown;
       translationY.value = withTiming(yDown, {
         duration: 200,
@@ -88,12 +87,6 @@ export const MonthlyBudget = ({budget, scrollToPage}: MonthlyBudgetProps) => {
     }
   });
 
-  function resetValues() {
-    lastY.value = withTiming(0, {duration: 200});
-    translationY.value = withTiming(0, {duration: 200});
-    setDeletecurrentValue(false);
-  }
-
   const borderAnimStyle = useAnimatedStyle(() => {
     return {
       borderColor: expenseColor.value,
@@ -108,69 +101,70 @@ export const MonthlyBudget = ({budget, scrollToPage}: MonthlyBudgetProps) => {
   });
 
   return (
-    <View style={MonthlyBudgetStyles.outerWrapper}>
-      <Animated.View style={[MonthlyBudgetStyles.InnerBorder, borderAnimStyle]}>
-        {deletecurrentValue && (
-          <Animated.View style={{position: 'absolute'}}>
-            <TouchableOpacity
-              onPress={() => {
-                const newBudgets = monthlyBudgets.filter(
-                  b => b._id !== budget._id,
-                );
-                setMonthlyBudgets(newBudgets);
-                setCurrMonthID(newBudgets[newBudgets.length - 1]?._id);
+    <Animated.View style={[MonthlyBudgetStyles.InnerBorder, borderAnimStyle]}>
+      {deletecurrentValue && (
+        <Animated.View style={{position: 'absolute'}}>
+          <TouchableOpacity
+            onPress={() => {
+              const newBudgets = monthlyBudgets.filter(
+                b => b._id !== budget._id,
+              );
+              setMonthlyBudgets(newBudgets);
+              setCurrMonthID(newBudgets[newBudgets.length - 1]?._id);
+              if (newBudgets.length - 1 >= 0)
                 scrollToPage(newBudgets.length - 1);
-                deleteBudget(budget._id);
-                //resetValues();
-              }}
-              style={MonthlyBudgetStyles.delete}>
-              <FaIcons
-                name="trash"
-                size={PixelRatio.roundToNearestPixel(42)}
-                color={Colors.white(0.7)}
-              />
-            </TouchableOpacity>
-          </Animated.View>
-        )}
 
-        <GestureDetector gesture={pan}>
-          <Animated.View
-            style={[
-              deleteTranslationStyle,
-              MonthlyBudgetStyles.MainInfoAninWrapper,
-            ]}>
-            <View style={MonthlyBudgetStyles.MainInfoContainer}>
-              <Text style={MonthlyBudgetStyles.yearText}>{budget.year}</Text>
-              <Text style={MonthlyBudgetStyles.MonthText}>{budget.month}</Text>
-            </View>
-
-            <Animated.Text
-              style={[
-                MonthlyBudgetStyles.MainPayText,
-                {
-                  color: expenseColor,
-                },
-              ]}>
-              {formatMoney(budget.currentValue)}
-            </Animated.Text>
-
-            <CurrencyInput
-              placeholder="maxValue"
-              value={custommaxValue}
-              onChangeValue={value => {
-                if (value) {
-                  setCustommaxValue(value);
-                  updateMonthlyBudget(budget._id, {maxValue: value});
-                }
-              }}
-              prefix="R$"
-              delimiter="."
-              separator=","
-              precision={2}
-              minValue={0}
-              style={MonthlyBudgetStyles.SecondaryPayText}
+              deleteBudget(budget._id);
+              //resetValues();
+            }}
+            style={MonthlyBudgetStyles.delete}>
+            <FaIcons
+              name="trash"
+              size={PixelRatio.roundToNearestPixel(42)}
+              color={Colors.white(0.7)}
             />
-            {/*  <TextInput
+          </TouchableOpacity>
+        </Animated.View>
+      )}
+
+      <GestureDetector gesture={pan}>
+        <Animated.View
+          style={[
+            deleteTranslationStyle,
+            MonthlyBudgetStyles.MainInfoAninWrapper,
+          ]}>
+          <View style={MonthlyBudgetStyles.MainInfoContainer}>
+            <Text style={MonthlyBudgetStyles.yearText}>{budget.year}</Text>
+            <Text style={MonthlyBudgetStyles.MonthText}>{budget.month}</Text>
+          </View>
+
+          <Animated.Text
+            style={[
+              MonthlyBudgetStyles.MainPayText,
+              {
+                color: expenseColor,
+              },
+            ]}>
+            {formatMoney(budget.currentValue)}
+          </Animated.Text>
+
+          <CurrencyInput
+            placeholder="maxValue"
+            value={custommaxValue}
+            onChangeValue={value => {
+              if (value) {
+                setCustommaxValue(value);
+                updateMonthlyBudget(budget._id, {maxValue: value});
+              }
+            }}
+            prefix="R$"
+            delimiter="."
+            separator=","
+            precision={2}
+            minValue={0}
+            style={MonthlyBudgetStyles.SecondaryPayText}
+          />
+          {/*  <TextInput
               placeholder="maxValue"
               value={custommaxValue}
               onChangeText={value => {
@@ -182,24 +176,23 @@ export const MonthlyBudget = ({budget, scrollToPage}: MonthlyBudgetProps) => {
               keyboardType="numeric"
             /> */}
 
-            <View
+          <View
+            style={{
+              width: Dimensions.get('window').width * 0.7,
+              backgroundColor: 'rgba(255, 255, 255, 0.1)',
+              borderRadius: PixelRatio.roundToNearestPixel(14),
+              overflow: 'hidden',
+            }}>
+            <Animated.View
               style={{
-                width: Dimensions.get('window').width * 0.7,
-                backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                borderRadius: PixelRatio.roundToNearestPixel(14),
-                overflow: 'hidden',
-              }}>
-              <Animated.View
-                style={{
-                  width: load,
-                  height: PixelRatio.roundToNearestPixel(14),
-                  backgroundColor: expenseColor,
-                }}
-              />
-            </View>
-          </Animated.View>
-        </GestureDetector>
-      </Animated.View>
-    </View>
+                width: load,
+                height: PixelRatio.roundToNearestPixel(14),
+                backgroundColor: expenseColor,
+              }}
+            />
+          </View>
+        </Animated.View>
+      </GestureDetector>
+    </Animated.View>
   );
 };

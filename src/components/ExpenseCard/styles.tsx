@@ -1,12 +1,12 @@
 import {StyleSheet, PixelRatio, Dimensions} from 'react-native';
-import {Colors} from '../../../utils';
+import {Colors} from '../../utils';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
-export const cardHeight = windowHeight * 0.1;
 export const extendedWidth = windowWidth * 0.9;
-export const normalWidth = windowWidth * 0.28;
+export const normalWidth = windowWidth * 0.44;
+export const cardHeight = normalWidth * 0.7;
 
 export const ExpenseCardStyles = StyleSheet.create({
   root: {
@@ -16,8 +16,9 @@ export const ExpenseCardStyles = StyleSheet.create({
     borderRadius: PixelRatio.roundToNearestPixel(8),
     backgroundColor: Colors.TransparentGrey,
     height: cardHeight,
+    width: normalWidth,
     overflow: 'hidden',
-    borderWidth: 1,
+    borderWidth: PixelRatio.roundToNearestPixel(2),
   },
   Container: {
     height: cardHeight,

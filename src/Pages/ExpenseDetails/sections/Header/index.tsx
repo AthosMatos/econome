@@ -21,6 +21,7 @@ const ExpenseDetailsHeader = () => {
   const {
     funcs: {
       update: {updateExpense},
+      delete: {deleteExpenseCard},
     },
   } = useDBContext();
   const month = getMonthlyBudget(currMonthID)?.month;
@@ -84,7 +85,8 @@ const ExpenseDetailsHeader = () => {
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => {
-                nav.navigate('Home', {expenseID: expenseID.toString()});
+                nav.navigate('Home');
+                deleteExpenseCard(expenseID);
               }}>
               <FaIcons
                 name="trash"

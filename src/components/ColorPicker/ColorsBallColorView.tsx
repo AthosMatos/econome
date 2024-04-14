@@ -1,7 +1,26 @@
 import Animated from 'react-native-reanimated';
-import {useThemeContext} from '../../context/themeContext';
-import {ColorWheelStyles} from './colorsP';
-import {PixelRatio, TouchableOpacity, View} from 'react-native';
+import {ballSize, outersize, useThemeContext} from '../../context/themeContext';
+import {PixelRatio, StyleSheet, TouchableOpacity, View} from 'react-native';
+
+export const ColorWheelStyles = StyleSheet.create({
+  root: {
+    gap: PixelRatio.roundToNearestPixel(20),
+  },
+  colorWheel: {
+    borderRadius: 200,
+    overflow: 'hidden',
+    width: outersize,
+    height: outersize,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  colorBallColor: {
+    width: ballSize,
+    height: ballSize,
+    borderRadius: 100,
+    borderWidth: 1,
+  },
+});
 
 const ColorBallColor = () => {
   const {

@@ -16,6 +16,7 @@ import {launchImageLibrary} from 'react-native-image-picker';
 import {useExpenseDetails} from '../../../context';
 import {useDBContext} from '../../../../../database/DBContext';
 import DropShadow from 'react-native-drop-shadow';
+import {BackGradient} from '../../../components/BackGradient';
 
 const LocalGallery = () => {
   const [open, setOpen] = useState(false);
@@ -41,7 +42,13 @@ const LocalGallery = () => {
             width: Dimensions.get('window').width * 0.9,
             height: Dimensions.get('window').height * 0.5,
             borderRadius: PixelRatio.roundToNearestPixel(10),
+            // borderc
           }}>
+          <BackGradient
+            width={Dimensions.get('window').width * 0.9}
+            height={Dimensions.get('window').height * 0.5}
+          />
+
           <View
             style={{
               flexDirection: 'row',

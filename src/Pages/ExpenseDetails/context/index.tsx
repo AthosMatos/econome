@@ -53,6 +53,8 @@ export const ExpenseDetailsProvider = ({
   const windowWidth = Dimensions.get('window').width;
   const windowHeight = Dimensions.get('window').height;
 
+  const [bvvlor, setBvvlor] = useState('#00000000');
+
   const colors = useDerivedValue(() => {
     return [color1.value, color2.value, color3.value];
   });

@@ -11,7 +11,7 @@ import GradientBackground from '../../components/GradientBackground';
 import ToolBar from '../../components/ToolsBar';
 import {useThemeContext} from '../../context/themeContext';
 import Budgets from '../../components/Budgets';
-import Expenses from '../../components/Expenses';
+import {useDBContext} from '../../database/DBContext';
 
 const Home = () => {
   const {
@@ -31,8 +31,9 @@ const Home = () => {
       width={Dimensions.get('window').width}
       height={Dimensions.get('window').height + (StatusBar.currentHeight ?? 0)}
       style={{
-        marginTop: StatusBar.currentHeight! * 3,
-        gap: PixelRatio.roundToNearestPixel(26),
+        gap: PixelRatio.roundToNearestPixel(20),
+        paddingTop: StatusBar.currentHeight && StatusBar.currentHeight * 2,
+        paddingBottom: PixelRatio.roundToNearestPixel(12),
       }}>
       <StatusBar
         backgroundColor={'transparent'}
@@ -42,7 +43,8 @@ const Home = () => {
       />
       <Budgets />
       <ToolBar />
-      <Expenses />
+
+      {/*   <Expenses /> */}
     </GradientBackground>
   );
 };

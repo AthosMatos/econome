@@ -26,6 +26,8 @@ export interface ExpenseDBI {
   img: string;
 
   currMonthID: BSON.ObjectID;
+
+  isAdd?: boolean;
 }
 
 export class ExpenseDB extends Object<ExpenseDB> {

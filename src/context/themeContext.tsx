@@ -204,10 +204,19 @@ export const ThemeProvider = ({children}: {children: any}) => {
       theme.colors.forEach((color, i) => {
         colorBalls[i].ballColor.value = color;
         const {x, y} = getPositionFromColor(color);
-        updateBallColorFromMove2(i, colorBalls[i].ballColor, {x, y});
+        const {hsl} = updateBallColorFromMove(i, colorBalls[i].ballColor, {
+          x,
+          y,
+        });
 
         colorBalls[i].positionX.value = x;
         colorBalls[i].positionY.value = y;
+
+        colorBalls[i].borderColor.value = getBestTextColorWorklet(
+          hsl.h,
+          hsl.s,
+          hsl.l,
+        );
       });
     }
   }, [theme]);
@@ -263,12 +272,20 @@ export const ThemeProvider = ({children}: {children: any}) => {
   function updateBallColorFromMove(
     index: number,
     ballColor: SharedValue<string>,
-    last: {x: SharedValue<number>; y: SharedValue<number>},
+    last: {x: SharedValue<number> | number; y: SharedValue<number> | number},
     event?: {x: number; y: number},
   ) {
     'worklet';
-    const x = event ? event.x : last.x.value;
-    const y = event ? event.y : last.y.value;
+    const x = event
+      ? event.x
+      : typeof last.x === 'number'
+      ? last.x
+      : last.x.value;
+    const y = event
+      ? event.y
+      : typeof last.y === 'number'
+      ? last.y
+      : last.y.value;
 
     // Assuming the center of the circle and its radius
     const centerX = outersize / 2 - ballSize / 2;
@@ -300,53 +317,12 @@ export const ThemeProvider = ({children}: {children: any}) => {
     if (index === 2) bottomTextColor.value = bestTextColor;
     lightness.value = l;
 
-    last.x.value = x;
-    last.y.value = y;
+    if (typeof last.x !== 'number') last.x.value = x;
+    if (typeof last.y !== 'number') last.y.value = y;
 
     return {centerX, centerY, angle, distanceFromCenter, hsl: {h, s, l}};
   }
-  function updateBallColorFromMove2(
-    index: number,
-    ballColor: SharedValue<string>,
-    last: {x: number; y: number},
-    event?: {x: number; y: number},
-  ) {
-    'worklet';
-    const x = event ? event.x : last.x;
-    const y = event ? event.y : last.y;
 
-    // Assuming the center of the circle and its radius
-    const centerX = outersize / 2 - ballSize / 2;
-    const centerY = outersize / 2 - ballSize / 2;
-
-    const angle = Math.atan2(y - centerY, x - centerX);
-    // Calculate the distance from the center to the event point
-    const distanceFromCenter = Math.sqrt(
-      Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2),
-    );
-
-    const h = (angle / (2 * Math.PI)) * 360;
-    const s = saturation.value;
-    const l = interpolate(
-      distanceFromCenter <= radius ? distanceFromCenter : radius,
-      [0, radius * 0.2, radius * 0.4, radius * 0.8, radius],
-      [0, 10, 35, 60, 100],
-    );
-
-    const colorhsl = `hsl(${h}, ${s}%, ${l}%)`;
-    ballColor.value = colorhsl;
-    const bestTextColor = withTiming(getBestTextColorWorklet(h, s, l), {
-      duration: 400,
-    });
-    if (index === 0) {
-      topTextColor.value = bestTextColor;
-    }
-    if (index === 1) middleTextColor.value = bestTextColor;
-    if (index === 2) bottomTextColor.value = bestTextColor;
-    lightness.value = l;
-
-    return {centerX, centerY, angle, distanceFromCenter, hsl: {h, s, l}};
-  }
   const states = {
     colorBalls,
     colors,

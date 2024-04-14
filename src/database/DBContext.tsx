@@ -34,14 +34,14 @@ interface DBContextI {
       deleteBill: (id: BSON.ObjectId) => void;
     };
     add: {
-      addExpenseCard: (obj: ExpenseDBI) => void;
+      addExpenseCard: (monthID: BSON.ObjectId) => void;
       addMonthlyBudget: (obj: MonthlyBudgetDBI) => void;
       addBill: (obj: BillDBI) => void;
     };
     get: {
       getBills: (expenseID: BSON.ObjectId) => BillDBI[];
       getMonthlyBudget(monthID: BSON.ObjectId): MonthlyBudgetDBI | null;
-      getExpenses: (monthID: BSON.ObjectId) => ExpenseDBI[];
+      getExpenses: (monthID?: BSON.ObjectId) => ExpenseDBI[];
       getMonthlyBudgets: () => MonthlyBudgetDBI[];
       getExpense: (id: BSON.ObjectId) => ExpenseDBI | null;
     };
@@ -70,28 +70,6 @@ export const DBProvider = ({children}: {children: any}) => {
   const [expenses, setExpenses] = useState<ExpenseDBI[]>([]);
   const [loadingData, setLoadingData] = useState(true);
 
-  function mockMonthlyBudget() {
-    realm.write(() => {
-      realm.create<MonthlyBudgetDB>('MonthlyBudget', {
-        _id: new BSON.ObjectId(),
-        currentValue: 0,
-        maxValue: 1000,
-        month: 'Janeiro',
-        year: new Date().getFullYear(),
-      });
-    });
-
-    realm.write(() => {
-      realm.create<MonthlyBudgetDB>('MonthlyBudget', {
-        _id: new BSON.ObjectId(),
-        currentValue: 0,
-        maxValue: 1000,
-        month: 'Fevereiro',
-        year: new Date().getFullYear(),
-      });
-    });
-  }
-
   useEffect(() => {
     /*  realm.write(() => {
       realm.deleteAll();
@@ -105,7 +83,10 @@ export const DBProvider = ({children}: {children: any}) => {
       ],
     }); */
     const mb = getMonthlyBudgets();
-    setCurrMonthID(mb[0]._id);
+    if (mb.length > 0) {
+      console.log(mb);
+      setCurrMonthID(mb[0]._id);
+    }
   }, []);
 
   function getMonthlyBudgets() {
@@ -139,11 +120,24 @@ export const DBProvider = ({children}: {children: any}) => {
     return null;
   }
 
-  function getExpenses(monthID: BSON.ObjectId) {
-    return realm
-      .objects<ExpenseDB>('Expense')
-      .filter(e => e.currMonthID.equals(monthID))
-      .map(e => {
+  function getExpenses(monthID?: BSON.ObjectId) {
+    if (monthID) {
+      return realm
+        .objects<ExpenseDB>('Expense')
+        .filter(e => e.currMonthID.equals(monthID))
+        .map(e => {
+          const exps: ExpenseDBI = {
+            currMonthID: e.currMonthID,
+            id: e._id,
+            img: e.img,
+            maxValue: e.maxValue,
+            name: e.name,
+            value: e.value,
+          };
+          return exps;
+        });
+    } else {
+      return realm.objects<ExpenseDB>('Expense').map(e => {
         const exps: ExpenseDBI = {
           currMonthID: e.currMonthID,
           id: e._id,
@@ -154,9 +148,20 @@ export const DBProvider = ({children}: {children: any}) => {
         };
         return exps;
       });
+    }
   }
 
-  function addExpenseCard(obj: ExpenseDBI) {
+  function addExpenseCard(monthID: BSON.ObjectId) {
+    const obj: ExpenseDBI = {
+      id: new BSON.ObjectId(),
+      name: 'Novo Gasto',
+      value: 0,
+      maxValue: 1000,
+      img: '',
+      currMonthID: monthID,
+    };
+    setExpenses([...expenses, obj]);
+
     realm.write(() => {
       realm.create<ExpenseDB>('Expense', {
         _id: obj.id,

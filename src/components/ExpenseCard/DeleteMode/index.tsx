@@ -1,9 +1,9 @@
 import {TouchableOpacity} from 'react-native';
 import FAicons from 'react-native-vector-icons/FontAwesome';
-import {Colors} from '../../../../utils';
 import {PixelRatio} from 'react-native';
-import {ExpenseDBI} from '../../../../database/Data/ExpenseDB';
-import {useDBContext} from '../../../../database/DBContext';
+import {ExpenseDBI} from '../../../database/Data/ExpenseDB';
+import {useDBContext} from '../../../database/DBContext';
+import {Colors} from '../../../utils';
 
 interface DeleteModeProps {
   deleteMode: boolean;
@@ -40,7 +40,7 @@ const DeleteMode = ({deleteMode, expense}: DeleteModeProps) => {
         }}
         style={{
           position: 'absolute',
-          right: PixelRatio.roundToNearestPixel(12),
+          //right: PixelRatio.roundToNearestPixel(12),
         }}>
         <FAicons name="trash" size={34} color={Colors.white(0.7)} />
       </TouchableOpacity>

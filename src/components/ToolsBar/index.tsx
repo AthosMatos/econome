@@ -16,7 +16,7 @@ const AnimatedIoIcons = Animated.createAnimatedComponent(IoIcons);
 
 const ToolBar = () => {
   const {
-    states: {openColorPicker, colors, middleTextColor},
+    states: {openColorPicker, colors, bottomTextColor},
     setStatesFuncs: {setOpenColorPicker},
   } = useThemeContext();
   const {
@@ -57,7 +57,7 @@ const ToolBar = () => {
         <AnimatedIoIcons
           name="color-palette"
           size={30}
-          color={middleTextColor}
+          color={bottomTextColor}
         />
       </TouchableOpacity>
       <View
@@ -73,7 +73,7 @@ const ToolBar = () => {
           }}>
           <AnimatedDropShadow
             style={{
-              shadowColor: middleTextColor,
+              shadowColor: bottomTextColor,
               shadowOffset: {
                 width: 0,
                 height: 0,
@@ -82,7 +82,7 @@ const ToolBar = () => {
               shadowRadius: 5,
               opacity: extendedCards ? 0.2 : 1,
             }}>
-            <AnimatedIoIcons name="grid" size={30} color={middleTextColor} />
+            <AnimatedIoIcons name="grid" size={30} color={bottomTextColor} />
           </AnimatedDropShadow>
         </TouchableOpacity>
         <TouchableOpacity
@@ -91,7 +91,7 @@ const ToolBar = () => {
           }}>
           <AnimatedDropShadow
             style={{
-              shadowColor: middleTextColor,
+              shadowColor: bottomTextColor,
               shadowOffset: {
                 width: 0,
                 height: 0,
@@ -100,7 +100,7 @@ const ToolBar = () => {
               shadowRadius: 5,
               opacity: extendedCards ? 1 : 0.2,
             }}>
-            <AnimatedIoIcons name="list" size={40} color={middleTextColor} />
+            <AnimatedIoIcons name="list" size={40} color={bottomTextColor} />
           </AnimatedDropShadow>
         </TouchableOpacity>
       </View>

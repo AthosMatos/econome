@@ -1,8 +1,7 @@
 import {PixelRatio, Text, View} from 'react-native';
 import {ExpenseCardStyles} from '../styles';
-import {ExpenseDBI} from '../../../../database/Data/ExpenseDB';
-import {formatMoney} from '../../../../utils';
-
+import {ExpenseDBI} from '../../../database/Data/ExpenseDB';
+import {formatMoney} from '../../../utils';
 interface ExpenseInfoProps {
   expense: ExpenseDBI;
 }

@@ -8,13 +8,14 @@ import {Dimensions} from 'react-native';
 import {useDBContext} from '../../database/DBContext';
 import CurrencyInput from 'react-native-currency-input';
 import {useExpenseDetails} from './context';
+import {BackGradient} from './components/BackGradient';
 
 interface ImageGradientProps {
   children?: any;
 }
 
 export const ImageGradient = (props: ImageGradientProps) => {
-  const {windowHeight, windowWidth, colors, expense} = useExpenseDetails();
+  const {windowHeight, windowWidth, expense} = useExpenseDetails();
 
   /*    const [imageSize, setImageSize] = useState({ width: 0, height: 0 });
        useEffect(() => {
@@ -43,27 +44,7 @@ export const ImageGradient = (props: ImageGradientProps) => {
           }}
         />
       )}
-      <Gradient
-        rect={{
-          x: 0,
-          y: 0,
-          width: windowWidth,
-          height: windowHeight + (StatusBar.currentHeight ?? 0),
-        }}
-        gradient={{
-          colors: colors,
-          start: vec(0, windowHeight / 4),
-          end: vec(0, windowHeight + (StatusBar.currentHeight ?? 0)),
-        }}
-        CanvasHeight={windowHeight + (StatusBar.currentHeight ?? 0)}
-        CanvasWidth={windowWidth}
-        CanvasStyle={{
-          backgroundColor: '#000000a3',
-          width: windowWidth,
-          height: windowHeight + (StatusBar.currentHeight ?? 0),
-          position: 'absolute',
-        }}
-      />
+      <BackGradient height={windowHeight} width={windowWidth} />
 
       {props.children}
     </>

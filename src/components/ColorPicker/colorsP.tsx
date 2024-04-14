@@ -17,7 +17,7 @@ import {
   outersize,
   useThemeContext,
 } from '../../context/themeContext';
-import ColorBallColor from './ColorsBallColorView';
+import ColorBallColor, {ColorWheelStyles} from './ColorsBallColorView';
 
 const radiaColors = [
   'rgba(0,0,0,0)',
@@ -32,26 +32,6 @@ const radiaColorsP = [
   'rgba(0,0,0,0.2)',
   'rgba(0,0,0,0)',
 ];
-
-export const ColorWheelStyles = StyleSheet.create({
-  root: {
-    gap: PixelRatio.roundToNearestPixel(20),
-  },
-  colorWheel: {
-    borderRadius: 200,
-    overflow: 'hidden',
-    width: outersize,
-    height: outersize,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  colorBallColor: {
-    width: ballSize,
-    height: ballSize,
-    borderRadius: 100,
-    borderWidth: 1,
-  },
-});
 
 export interface ColorBallI {
   ballColor: SharedValue<string>;
